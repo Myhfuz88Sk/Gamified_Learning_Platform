@@ -1,0 +1,126 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block title %}Mentor Hub | Subject Overview | RuralEdu{% endblock %}
+{% block breadcrumb %}Teacher / Curriculum{% endblock %}
+{% block page_title %}Institute Curriculum Overview{% endblock %}
+
+{% block content %}
+<style>
+    /* 1️⃣ UI FREEZE - Card Design */
+    .mentor-subject-card {
+        background: #FFFFFF;
+        border: 2px solid #E9ECEF;
+        border-radius: 14px;
+        padding: 2.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+        position: relative;
+    }
+
+    .mentor-subject-card:hover {
+        transform: translateY(-10px);
+        border-color: #2E8B57; /* Academic Green */
+        box-shadow: 0 25px 50px -15px rgba(46, 139, 87, 0.15);
+    }
+
+    .mentor-icon-box {
+        width: 60px; height: 60px;
+        background: #f0fdf4; color: #2E8B57;
+        border-radius: 12px; display: flex;
+        align-items: center; justify-content: center;
+        font-size: 1.5rem; margin-bottom: 1.5rem;
+    }
+
+    .pill-tag {
+        font-size: 10px; font-weight: 800;
+        text-transform: uppercase; padding: 4px 12px;
+        border-radius: 10px;
+    }
+
+    .pill-grade { background: #eef2ff; color: #4C6EF5; } /* Learning Blue */
+    .pill-stream { background: #fff7ed; color: #FFA502; } /* XP Gold */
+
+    .btn-manage {
+        display: flex; align-items: center; justify-content: center;
+        gap: 8px; width: 100%; padding: 12px;
+        border-radius: 12px; font-size: 11px; font-weight: 700;
+        text-transform: uppercase; border: 2px solid #4C6EF5;
+        color: #4C6EF5; background: transparent; transition: 0.3s;
+    }
+
+    .btn-manage:hover {
+        background: #4C6EF5; color: white;
+        box-shadow: 0 8px 15px rgba(76, 110, 245, 0.2);
+    }
+</style>
+
+<div class="animate-in fade-in slide-in-from-bottom-8 duration-700">
+    
+    <div class="bg-white p-8 rounded-[14px] shadow-sm border border-gray-100 mb-10 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-6">
+            <div class="w-14 h-14 bg-blue-50 text-[#4C6EF5] rounded-2xl flex items-center justify-center text-xl shadow-inner">
+                <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-2xl text-[#212529]">Curriculum Audit</h3>
+                <p class="text-sm text-[#6C757D]">Monitoring STEM modules for <span class="text-[#2E8B57] font-bold">{{ user.institute.name }}</span></p>
+            </div>
+        </div>
+        <span class="text-[10px] font-black text-[#6C757D] uppercase tracking-widest bg-[#F8F9FA] px-4 py-2 rounded-xl border border-[#E9ECEF]">Role: Certified Mentor</span>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for subject in subjects %}
+        <div class="mentor-subject-card">
+            <div class="flex justify-between items-start">
+                <div class="mentor-icon-box">
+                    {% if 'Math' in subject.name %}
+                        <i class="fa-solid fa-square-root-variable"></i>
+                    {% elif 'Science' in subject.name or 'Physics' in subject.name or 'Chem' in subject.name %}
+                        <i class="fa-solid fa-flask-vial"></i>
+                    {% elif 'Bio' in subject.name %}
+                        <i class="fa-solid fa-microscope"></i>
+                    {% else %}
+                        <i class="fa-solid fa-folder-tree"></i>
+                    {% endif %}
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <span class="pill-tag pill-grade">Grade {{ subject.academic_class.grade }}</span>
+                    {% if subject.stream %}
+                        <span class="pill-tag pill-stream">{{ subject.stream.name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-[#212529] mb-2">{{ subject.name }}</h3>
+            
+            <div class="flex items-center gap-4 mb-8">
+                <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full bg-[#E9ECEF] border-2 border-white flex items-center justify-center text-[8px] font-bold">A</div>
+                    <div class="w-6 h-6 rounded-full bg-[#E9ECEF] border-2 border-white flex items-center justify-center text-[8px] font-bold">B</div>
+                </div>
+                <span class="text-[10px] font-black text-[#6C757D] uppercase tracking-tighter">Active Tracking Enabled</span>
+            </div>
+
+            <div class="space-y-3">
+                <a href="{% url 'academics:subject_missions' subject.id %}" class="manage-game-link">
+                    <i class="fa-solid fa-sliders"></i> Manage Missions
+                </a>
+                <a href="{% url 'accounts:teacher_dashboard' %}" class="text-center block text-[10px] font-bold text-[#6C757D] hover:text-[#2E8B57] uppercase transition-colors">
+                    Back to Performance Analytics
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-32 text-center bg-white rounded-[14px] border-4 border-dashed border-[#E9ECEF]">
+            <div class="w-20 h-20 bg-[#F8F9FA] text-[#6C757D] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <h3 class="text-xl font-bold text-[#6C757D]">No subjects mapped to your institute.</h3>
+            <p class="text-sm text-[#6C757D] mt-2">Subjects defined by the Admin will appear here for your management.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
